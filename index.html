@@ -176,6 +176,11 @@ button:active{transform:translateY(0) scale(.99)}
 .timelineItem.done .tText{color:rgba(200,200,220,.55); text-decoration:line-through}
 .timelineItem.done .tDot{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.10)}
 
+
+.timelineList{font-size:11px;color:rgba(220,220,235,.75);line-height:1.45}
+.tl{padding:4px 0;border-left:2px solid rgba(255,255,255,.08);padding-left:8px}
+.tl.end{color:rgba(255,255,255,.9)}
+
 </style>
 </head>
 <body>
@@ -246,6 +251,21 @@ button:active{transform:translateY(0) scale(.99)}
     </div>
 
     <div class="col right">
+      <div class="card timeline">
+        <div class="pTitle">Как всё было</div>
+        <div class="timelineList" id="timeline">
+          <div class="tl">Перестал есть</div>
+          <div class="tl">Резкая потеря веса</div>
+          <div class="tl">Боль во рту</div>
+          <div class="tl">Решение об операции</div>
+          <div class="tl">Удалены все зубы</div>
+          <div class="tl">Истощение</div>
+          <div class="tl">Кальцевирус</div>
+          <div class="tl">Он не восстановился</div>
+          <div class="tl end">Смерть</div>
+        </div>
+      </div>
+
       <div class="card actionsCard">
         <div class="pTitle">Действия</div>
         <div id="actions" class="actions"></div>
