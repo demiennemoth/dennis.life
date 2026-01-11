@@ -3,154 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>MothDemienne: System — симулятор моли</title>
-
-  <!-- SEO -->
-  <meta name="description" content="Moth Demienne: System — минималистичный life-sim в эстетике тёмного Windows 95. Симулятор моли, которая выживает на свете и тепле." />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://demiennemoth.github.io/system/" />
-
-  <!-- Open Graph -->
-  <meta property="og:url" content="https://demiennemoth.github.io/system/" />
-  <meta property="og:title" content="MothDemienne: System" />
-  <meta property="og:description" content="Тёмный life-sим о моли, которая живёт на свете лампочки и твоём внимании." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://demiennemoth.github.io/system/images/moth_realistic.png" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="images/moth_realistic.png" />
-
-  <!-- Tailwind через CDN -->
+  <title>Он здесь</title>
+  <meta name="description" content="Он здесь — место памяти. Дэннис." />
+  <link rel="icon" type="image/png" href="images/dennis.png" />
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Кастомные стили -->
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body class="h-full bg-zinc-950 text-zinc-100">
-  <div class="max-w-5xl mx-auto p-4 md:p-6 space-y-4">
-    <header class="flex items-center justify-between">
-      <h1 class="text-xl md:text-2xl font-bold">
-        MothDemienne: System
-        <span class="text-zinc-400 text-base">v0.1 mock</span>
-      </h1>
-      <div class="flex items-center gap-2 text-sm">
-        <button id="btn-new" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700">Новая жизнь</button>
-        <button id="btn-save" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700">Сохранить</button>
-        <button id="btn-load" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700">Загрузить</button>
-      </div>
+  <div class="max-w-5xl mx-auto p-4 space-y-4">
+    <header>
+      <h1 class="text-2xl font-bold">Он здесь <span class="text-zinc-400">Дэннис</span></h1>
     </header>
-
-    <!-- AUTH BAR -->
-    <div id="auth" class="flex flex-wrap items-center gap-2 text-sm mb-4">
-      <input id="email" placeholder="email" class="px-2 py-1 rounded bg-zinc-800" />
-      <input id="pass" type="password" placeholder="password" class="px-2 py-1 rounded bg-zinc-800" />
-      <button id="btn-signup" class="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700">Sign up</button>
-      <button id="btn-login"  class="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700">Login</button>
-      <button id="btn-logout" class="px-3 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 hidden">Logout</button>
-      <span id="whoami" class="text-zinc-400"></span>
-    </div>
-
     <main class="space-y-6">
       <section class="grid md:grid-cols-3 gap-4">
-        <!-- HUD -->
         <div class="md:col-span-2 space-y-4">
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div class="px-3 py-2 bg-zinc-900 rounded-2xl">
-              <div class="text-xs text-zinc-400">День / время</div>
-              <div class="text-lg font-semibold">
-                <span id="day">1</span>, <span id="clock">08:00</span>
-              </div>
-            </div>
-            <div class="px-3 py-2 bg-zinc-900 rounded-2xl">
-              <div class="text-xs text-zinc-400">Деньги</div>
-              <div class="text-lg font-semibold">
-                <span id="money">200</span> ₽
-              </div>
-            </div>
-            <div class="px-3 py-2 bg-zinc-900 rounded-2xl">
-              <div class="text-xs text-zinc-400">Скорость</div>
-              <div class="flex gap-2 mt-1">
-                <button data-speed="1" class="speed px-2 py-1 rounded-lg bg-zinc-800">1×</button>
-                <button data-speed="2" class="speed px-2 py-1 rounded-lg bg-zinc-800">2×</button>
-                <button data-speed="4" class="speed px-2 py-1 rounded-lg bg-zinc-800">4×</button>
-                <button id="btn-pause" class="px-2 py-1 rounded-lg bg-zinc-800">⏸</button>
-              </div>
-            
-            <div class="px-3 py-2 bg-zinc-900 rounded-2xl">
-              <div class="text-xs text-zinc-400">Текущее</div>
-              <div class="text-sm font-semibold">
-                <span id="activity-name" class="text-zinc-100">—</span>
-              </div>
-              <div class="text-xs text-zinc-400 mt-1">
-                Осталось: <span id="activity-left" class="text-zinc-200">—</span>
-              </div>
-              <div class="bar mt-2">
-                <div id="activity-bar" class="bar-inner" style="width:0%"></div>
-              </div>
-            </div>
-</div>
+          <div class="bg-zinc-900 p-3">
+            <div class="text-xs text-zinc-400">Текущее</div>
+            <div id="activity-name">—</div>
+            <div class="text-xs">Осталось: <span id="activity-left">—</span></div>
+            <div class="bar"><div id="activity-bar" class="bar-inner"></div></div>
           </div>
-
-          <!-- Контейнеры для статов (JS сам туда всё вставит) -->
-          <div class="grid sm:grid-cols-2 gap-3">
-            <div class="bg-zinc-900 rounded-2xl p-3 space-y-2" data-stats-column="left"></div>
-            <div class="bg-zinc-900 rounded-2xl p-3 space-y-2" data-stats-column="right"></div>
-          </div>
+          <p class="italic text-zinc-400">Он умер в боли. Но любовь была до конца.</p>
         </div>
-
-        <!-- Actions -->
-        <aside class="space-y-3">
-          <h2 class="text-sm uppercase tracking-wide text-zinc-400">Действия</h2>
-          <div id="actions" class="grid gap-2">
-          </div>
+        <aside>
+          <h2 class="text-sm text-zinc-400">Действия</h2>
+          <div id="actions"></div>
         </aside>
       </section>
-
-      <section class="mt-6">
-        <h2 class="text-sm uppercase tracking-wide text-zinc-400 mb-2">Профиль</h2>
-        <div class="flex flex-col sm:flex-row bg-zinc-900 rounded-2xl overflow-hidden shadow-lg ring-1 ring-zinc-800">
-          <div class="sm:w-1/3">
-            <img src="images/moth_realistic.png" alt="Моль — подопечный в симуляторе" class="object-cover w-full h-full grayscale opacity-80" />
-          </div>
-          <div class="sm:w-2/3 p-4 space-y-2 text-sm">
-            <h3 class="text-lg font-semibold text-zinc-100">L. Atramentaria</h3>
-            <p class="italic text-zinc-400">"Ты — моль. Ты ешь свет, чтобы не умереть."</p>
-            <ul class="space-y-1">
-              <li><strong class="text-zinc-300">Ранг:</strong> Теневая моль</li>
-              <li><strong class="text-zinc-300">Температура лампочки:</strong> 37°C</li>
-              <li><strong class="text-zinc-300">Потребность в свете:</strong> 91%</li>
-              <li><strong class="text-zinc-300">Состояние крыльев:</strong> Пыльная гармония</li>
-              <li><strong class="text-zinc-300">Состояние:</strong> Грусть, но уют</li>
-            </ul>
-            <p class="text-zinc-400 mt-2">
-              В темноте она находит свет. В тепле — смысл. В тебе — дом.
-            </p>
-          </div>
+      <section>
+        <h2 class="text-sm text-zinc-400">Профиль</h2>
+        <div class="bg-zinc-900 p-4">
+          <h3 class="text-lg font-semibold">Дэннис</h3>
+          <p class="italic text-zinc-400">«Я здесь.»</p>
+          <ul>
+            <li>Хозяйка: Ольга</li>
+            <li>Возраст: навсегда 6 лет</li>
+          </ul>
         </div>
       </section>
-
       <section>
-        <h2 class="text-sm uppercase tracking-wide text-zinc-400 mb-2">Лог</h2>
-        <div id="log" class="log bg-zinc-900 rounded-2xl p-3 h-56 overflow-auto text-sm space-y-1"></div>
+        <h2 class="text-sm text-zinc-400">Лог</h2>
+        <div id="log" class="bg-zinc-900 p-3 h-56 overflow-auto"></div>
       </section>
     </main>
   </div>
-
-  <template id="stat-row">
-    <div>
-      <div class="flex items-center justify-between text-xs text-zinc-400 mb-1">
-        <span class="label"></span>
-        <span class="value text-zinc-200 font-medium"></span>
-      </div>
-      <div class="bar bg-zinc-800 w-full">
-        <div class="bar-inner bg-zinc-600 w-1/2"></div>
-      </div>
-    </div>
-  </template>
-
   <script src="script.js"></script>
-  <script type="module" src="firebase.js"></script>
 </body>
 </html>
