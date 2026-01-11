@@ -147,7 +147,8 @@ body[data-time="night"][data-mood="low"] {
 }
 
 
-/* --- intrusive whispers & fractures --- */
-.whisper { color:#7c7c9a; font-style:italic; }
-.ui-fracture { opacity:0.85; filter: blur(0.3px); }
+/* --- ДОБАВЛЕНО: шёпоты/вторжения --- */
+#log .whisper { color: #8b8ba8 !important; font-style: italic; opacity: 0.9; }
+/* лёгкая "усталость" интерфейса (можно усиливать позже) */
+body.ui-fracture .max-w-5xl { filter: brightness(0.92) contrast(1.02); }
 
