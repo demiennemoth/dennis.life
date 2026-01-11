@@ -1,127 +1,124 @@
 
-// --- Canvas clouds background (макет 3) ---
-const c = document.getElementById('cloudCanvas');
-const ctx = c.getContext('2d');
-
-function resize(){
-  c.width = window.innerWidth * devicePixelRatio;
-  c.height = window.innerHeight * devicePixelRatio;
+:root{
+  --t:#f1f1f8;
+  --m:rgba(210,210,230,.72);
+  --sh:rgba(0,0,0,.78);
 }
-window.addEventListener('resize', resize);
-resize();
 
-let t = 0;
-const blobs = Array.from({length: 220}, () => ({
-  x: Math.random()*1.2 - 0.1,
-  y: Math.random()*0.9,
-  r: 0.08 + Math.random()*0.22,
-  a: 0.02 + Math.random()*0.05,
-  s: 0.002 + Math.random()*0.006
-}));
+*{box-sizing:border-box}
+html,body{height:100%}
 
-function draw(){
-  t += 0.0025;
-  const w = c.width, h = c.height;
-
-  // sky gradient
-  const g = ctx.createLinearGradient(0,0,0,h);
-  g.addColorStop(0,'#0a0a16');
-  g.addColorStop(0.55,'#04040b');
-  g.addColorStop(1,'#000000');
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,w,h);
-
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  ctx.filter = `blur(${22*devicePixelRatio}px)`;
-
-  for (const b of blobs){
-    const x = ((b.x + (t*b.s)) % 1.3) * w;
-    const y = b.y * h;
-    const r = b.r * Math.max(w,h);
-    const gg = ctx.createRadialGradient(x,y,0,x,y,r);
-    gg.addColorStop(0, `rgba(210,210,245,${b.a})`);
-    gg.addColorStop(1, `rgba(210,210,245,0)`);
-    ctx.fillStyle = gg;
-    ctx.beginPath();
-    ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fill();
-  }
-  ctx.restore();
-
-  // subtle vignette
-  const vg = ctx.createRadialGradient(w*0.5,h*0.15,0,w*0.5,h*0.35,Math.max(w,h)*0.75);
-  vg.addColorStop(0,'rgba(255,255,255,0.06)');
-  vg.addColorStop(1,'rgba(0,0,0,0.35)');
-  ctx.fillStyle = vg;
-  ctx.fillRect(0,0,w,h);
-
-  requestAnimationFrame(draw);
+body{
+  margin:0;
+  color:var(--t);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:#000;
+  overflow-x:hidden;
+  text-shadow: 0 1px 10px rgba(0,0,0,.65);
 }
-draw();
 
-// --- UI logic ---
-const actionsEl = document.getElementById("actions");
-const logEl = document.getElementById("log");
-const activityNameEl = document.getElementById("activity-name");
-const activityLeftEl = document.getElementById("activity-left");
-const activityBarEl = document.getElementById("activity-bar");
-
-const ACTIONS = [
-  { name: "Лечь на колени", dur: 10.0, lines: ["Ты тёплая.", "Можно полежать?", "Оля, я здесь."] },
-  { name: "Погладить", dur: 4.0, lines: ["Мне больно, но хорошо.", "Я помню руки.", "Я помню."] },
-  { name: "Лечь спать на подушку", dur: 20.0, lines: ["Я здесь.", "Я сторожу сон.", "Мне хорошо."] },
-  { name: "Поесть", dur: 6.0, lines: ["Не получается.", "Больно.", "Теперь можно."] }
-];
-
-let current = null;
-let last = performance.now();
-
-function logLine(t, cls="") {
-  const d = document.createElement("div");
-  if (cls) d.className = cls;
-  d.textContent = t;
-  logEl.appendChild(d);
-  logEl.scrollTop = logEl.scrollHeight;
+#cloudCanvas{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  opacity:1;
 }
-function fmt(ms){
-  const s = Math.max(0, Math.round(ms/1000));
-  const mm = String(Math.floor(s/60)).padStart(2,"0");
-  const ss = String(s%60).padStart(2,"0");
-  return `${mm}:${ss}`;
-}
-function startAction(a) {
-  if (current) { logLine("Сначала закончи текущее.", "whisper"); return; }
-  current = { ...a, left: a.dur*1000, total: a.dur*1000 };
-  activityNameEl.textContent = a.name;
-  logLine("Начал(а): " + a.name + " (≈ " + fmt(current.left) + ").", "whisper");
-}
-function tick(now){
-  const dt = now - last; last = now;
-  if (current){
-    current.left -= dt;
-    activityLeftEl.textContent = fmt(current.left);
-    const pct = (1 - (current.left/current.total))*100;
-    activityBarEl.style.width = Math.min(100, Math.max(0,pct)) + "%";
-    if (current.left <= 0){
-      const line = current.lines[Math.floor(Math.random()*current.lines.length)];
-      logLine(line);
-      logLine("Завершено: " + current.name + ".", "whisper");
-      current = null;
-      activityNameEl.textContent = "—";
-      activityLeftEl.textContent = "—";
-      activityBarEl.style.width = "0%";
-    }
-  }
-  requestAnimationFrame(tick);
-}
-requestAnimationFrame(tick);
 
-ACTIONS.forEach(a => {
-  const b = document.createElement("button");
-  b.textContent = a.name;
-  b.onclick = () => startAction(a);
-  actionsEl.appendChild(b);
-});
+.wrap{
+  max-width: 1100px;
+  margin: 22px auto;
+  padding: 10px 12px;
+}
 
-logLine("Он здесь.", "whisper");
+.cloud-window{
+  position: relative;
+  width: min(1100px, 96vw);
+  margin: 0 auto;
+  padding: 92px 120px 105px;
+  background-image: url("assets/cloud_window.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  filter: drop-shadow(0 30px 65px var(--sh));
+}
+
+@media (max-width: 900px){
+  .cloud-window{ padding: 72px 64px 82px; }
+}
+@media (max-width: 520px){
+  .cloud-window{ padding: 56px 28px 64px; background-size: cover; }
+}
+
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.h1{font-size:28px;font-weight:800;letter-spacing:.2px}
+.sub{color:var(--m);font-size:14px;margin-top:2px}
+
+.grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+.card{ background: transparent; border: 0; box-shadow: none; padding: 10px 4px; }
+.quote{ padding-top: 14px; }
+.quoteText{color:rgba(235,235,250,.88);font-style:italic}
+
+.label{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+.value{font-size:18px;font-weight:700;margin-top:6px}
+.small{color:var(--m);font-size:12px;margin-top:4px}
+
+.bar{
+  height:10px;
+  background:rgba(0,0,0,.38);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:999px;
+  margin-top:10px;
+  overflow:hidden
+}
+.bar-inner{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,rgba(210,210,255,.22),rgba(140,140,190,.58))
+}
+
+.actions{ display:flex; flex-direction:column; gap:10px; margin-top:10px }
+button{
+  cursor:pointer;
+  width:100%;
+  background:rgba(18,18,26,.72);
+  border:1px solid rgba(255,255,255,.16);
+  color:var(--t);
+  border-radius:16px;
+  padding:11px 14px;
+  transition:transform .12s ease, background .12s ease, border-color .12s ease
+}
+button:hover{transform:translateY(-1px);background:rgba(28,28,40,.78);border-color:rgba(255,255,255,.22)}
+button:active{transform:translateY(0) scale(.99)}
+
+.log{
+  height:220px;
+  overflow:auto;
+  padding: 6px 2px 0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px;
+  line-height:1.35
+}
+.whisper{color:rgba(200,200,230,.70);font-style:italic}
+
+.pTitle{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
+.pName{font-size:18px;font-weight:800}
+.pQuote{color:rgba(225,225,245,.82);font-style:italic;margin-top:4px}
+
+.profile-grid{ display:grid; grid-template-columns: 1fr 260px; gap: 14px; align-items: center; }
+@media (max-width: 720px){
+  .profile-grid{ grid-template-columns: 1fr; }
+  .profile-art{ order: -1; justify-self: start; }
+}
+
+.pMeta{margin-top:10px;color:rgba(230,230,250,.82);display:grid;gap:6px}
+.pFoot{margin-top:10px;color:rgba(210,210,230,.72)}
+
+.dennis-img{
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  display:block;
+  filter: drop-shadow(0 18px 35px rgba(0,0,0,.65));
+}
