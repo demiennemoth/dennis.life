@@ -251,6 +251,37 @@ function randomLine(lines){
   return lines[Math.floor(Math.random()*lines.length)];
 }
 
+
+const OLYA_LINES = [
+  "Оля, ты здесь?",
+  "Оля, не уходи.",
+  "Мне спокойнее, когда ты рядом.",
+  "Оля, я люблю тебя.",
+  "Ты моя.",
+  "Я всегда искал тебя.",
+  "Оля, погладь.",
+  "Можно я побуду с тобой?",
+  "Я знаю твой запах.",
+  "Оля, я дома.",
+  "Ты тёплая.",
+  "Мне хорошо возле тебя.",
+  "Оля, я старался.",
+  "Ты всё сделала правильно.",
+  "Я чувствовал твою любовь.",
+  "Оля, я никуда не делся.",
+  "Я всё ещё твой.",
+  "Хорошо, что это была ты."
+];
+
+function maybeShowOlyaLine(){
+  if (Math.random() < 0.12) {
+    showOverlay(randomLine(OLYA_LINES));
+    return true;
+  }
+  return false;
+}
+
+
 const ACTIONS = [
   { name:"Лечь на колени", dur: 10_000, lines:["Ты тёплая.","Можно полежать?","Оля, я здесь."] },
   { name:"Погладить", dur: 4_000, lines:["Мне хорошо.","Я помню.","Я люблю тебя, Оля."] },
@@ -279,8 +310,10 @@ function tick(now){
     const pct = (1 - (current.left/current.total))*100;
     activityBarEl.style.width = Math.min(100, Math.max(0,pct)) + "%";
     if (current.left <= 0){
-      const line = randomLine(current.lines);
-      showOverlay(line);
+      if (!maybeShowOlyaLine()) {
+        const line = randomLine(current.lines);
+        showOverlay(line);
+      }
       showToast("Завершено: " + current.name + ".");
       current = null;
       activityNameEl.textContent = "—";
