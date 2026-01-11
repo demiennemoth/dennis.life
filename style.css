@@ -2,7 +2,12 @@
 :root{
   --t:#f1f1f8;
   --m:rgba(210,210,230,.72);
-  --sh:rgba(0,0,0,.78);
+  --panel: rgba(10,10,14,.46);
+  --panel2: rgba(6,6,10,.52);
+  --bd: rgba(255,255,255,.12);
+  --bd2: rgba(255,255,255,.18);
+  --sh: rgba(0,0,0,.78);
+  --glow: rgba(200,200,255,.10);
 }
 
 *{box-sizing:border-box}
@@ -14,7 +19,7 @@ body{
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   background:#000;
   overflow-x:hidden;
-  text-shadow: 0 1px 10px rgba(0,0,0,.65);
+  text-shadow: 0 1px 10px rgba(0,0,0,.55);
 }
 
 #cloudCanvas{
@@ -25,49 +30,71 @@ body{
 }
 
 .wrap{
-  max-width: 1100px;
-  margin: 22px auto;
+  max-width: 1440px;
+  margin: 18px auto;
   padding: 10px 12px;
 }
 
+/* === Главное облако-окно ===
+   Важно: НЕ тянем картинку в 100%/100% (это мылит),
+   используем cover, а контейнер делаем шире. */
 .cloud-window{
   position: relative;
-  width: min(1100px, 96vw);
+  width: min(1440px, 96vw);
   margin: 0 auto;
-  padding: 92px 120px 105px;
+  padding: 110px 140px 120px;
   background-image: url("images/cloud_window.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 100% 100%;
-  filter: drop-shadow(0 30px 65px var(--sh));
+  background-size: cover;
+  filter: drop-shadow(0 34px 80px var(--sh));
 }
 
-@media (max-width: 900px){
-  .cloud-window{ padding: 72px 64px 82px; }
+/* под маленькие экраны — уменьшаем только внутренние отступы,
+   сам фон остаётся cover и не “сжимает” детализацию */
+@media (max-width: 1100px){
+  .cloud-window{ padding: 90px 92px 105px; }
+}
+@media (max-width: 760px){
+  .cloud-window{ padding: 78px 48px 88px; }
 }
 @media (max-width: 520px){
-  .cloud-window{ padding: 56px 28px 64px; background-size: cover; }
+  .cloud-window{ padding: 60px 22px 70px; }
 }
 
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.h1{font-size:28px;font-weight:800;letter-spacing:.2px}
-.sub{color:var(--m);font-size:14px;margin-top:2px}
+.top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.h1{font-size:30px;font-weight:900;letter-spacing:.3px}
+.sub{color:var(--m);font-size:14px;margin-top:4px}
 
-.grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px}
+/* === Сетка как было: левый столбец / правый столбец === */
+.grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:start}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
 
-.card{ background: transparent; border: 0; box-shadow: none; padding: 10px 4px; }
-.quote{ padding-top: 14px; }
-.quoteText{color:rgba(235,235,250,.88);font-style:italic}
+/* === Карточки (блоки) === */
+.card{
+  background: var(--panel);
+  border: 1px solid var(--bd);
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.45);
+  backdrop-filter: blur(10px);
+  padding: 14px 16px;
+}
 
+.card + .card{ margin-top: 14px; }
+
+/* Quote */
+.quoteText{color:rgba(235,235,250,.90);font-style:italic}
+
+/* labels */
 .label{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
-.value{font-size:18px;font-weight:700;margin-top:6px}
+.value{font-size:18px;font-weight:800;margin-top:6px}
 .small{color:var(--m);font-size:12px;margin-top:4px}
 
+/* progress */
 .bar{
   height:10px;
-  background:rgba(0,0,0,.38);
-  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.12);
   border-radius:999px;
   margin-top:10px;
   overflow:hidden
@@ -75,45 +102,60 @@ body{
 .bar-inner{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,rgba(210,210,255,.22),rgba(140,140,190,.58))
+  background:linear-gradient(90deg,rgba(210,210,255,.22),rgba(140,140,190,.60))
 }
 
+/* actions */
 .actions{ display:flex; flex-direction:column; gap:10px; margin-top:10px }
 button{
   cursor:pointer;
   width:100%;
-  background:rgba(18,18,26,.72);
-  border:1px solid rgba(255,255,255,.16);
+  background:rgba(18,18,26,.74);
+  border:1px solid rgba(255,255,255,.18);
   color:var(--t);
   border-radius:16px;
   padding:11px 14px;
-  transition:transform .12s ease, background .12s ease, border-color .12s ease
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
 }
-button:hover{transform:translateY(-1px);background:rgba(28,28,40,.78);border-color:rgba(255,255,255,.22)}
+button:hover{transform:translateY(-1px);background:rgba(28,28,40,.80);border-color:rgba(255,255,255,.26)}
 button:active{transform:translateY(0) scale(.99)}
 
+/* log (voice) */
 .log{
   height:220px;
   overflow:auto;
-  padding: 6px 2px 0;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.26);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 0 0 6px rgba(200,200,255,.03);
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:12px;
-  line-height:1.35
+  line-height:1.4;
 }
-.whisper{color:rgba(200,200,230,.70);font-style:italic}
+
+/* Slight highlight for voice panel */
+.card.voice{
+  background: linear-gradient(180deg, rgba(10,10,16,.55), rgba(6,6,10,.50));
+  border-color: rgba(200,200,255,.18);
+  box-shadow: 0 18px 55px rgba(0,0,0,.55), 0 0 0 1px rgba(200,200,255,.08), 0 0 40px var(--glow);
+}
+
+.whisper{color:rgba(200,200,230,.72);font-style:italic}
 
 .pTitle{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
-.pName{font-size:18px;font-weight:800}
-.pQuote{color:rgba(225,225,245,.82);font-style:italic;margin-top:4px}
+.pName{font-size:18px;font-weight:900}
+.pQuote{color:rgba(225,225,245,.85);font-style:italic;margin-top:4px}
 
+/* profile layout */
 .profile-grid{ display:grid; grid-template-columns: 1fr 260px; gap: 14px; align-items: center; }
 @media (max-width: 720px){
   .profile-grid{ grid-template-columns: 1fr; }
   .profile-art{ order: -1; justify-self: start; }
 }
 
-.pMeta{margin-top:10px;color:rgba(230,230,250,.82);display:grid;gap:6px}
-.pFoot{margin-top:10px;color:rgba(210,210,230,.72)}
+.pMeta{margin-top:10px;color:rgba(230,230,250,.84);display:grid;gap:6px}
+.pFoot{margin-top:10px;color:rgba(210,210,230,.76)}
 
 .dennis-img{
   width: 100%;
