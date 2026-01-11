@@ -145,3 +145,9 @@ body[data-energy="low"] .max-w-5xl {
 body[data-time="night"][data-mood="low"] {
   background: radial-gradient(circle at top, #050505 0%, #000 40%, #000 100%) !important;
 }
+
+
+/* --- intrusive whispers & fractures --- */
+.whisper { color:#7c7c9a; font-style:italic; }
+.ui-fracture { opacity:0.85; filter: blur(0.3px); }
+
