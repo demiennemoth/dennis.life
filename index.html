@@ -1,52 +1,63 @@
 <!doctype html>
-<html lang="ru" class="h-full">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Он здесь</title>
-  <meta name="description" content="Он здесь — место памяти. Дэннис." />
-  <link rel="icon" type="image/png" href="images/dennis.png" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Он здесь — Дэннис.">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="h-full bg-zinc-950 text-zinc-100">
-  <div class="max-w-5xl mx-auto p-4 space-y-4">
-    <header>
-      <h1 class="text-2xl font-bold">Он здесь <span class="text-zinc-400">Дэннис</span></h1>
+
+<body>
+  <canvas id="cloudCanvas"></canvas>
+
+  <div class="wrap">
+    <header class="top">
+      <div class="title">
+        <div class="h1">Он здесь</div>
+        <div class="sub">Дэннис</div>
+      </div>
     </header>
-    <main class="space-y-6">
-      <section class="grid md:grid-cols-3 gap-4">
-        <div class="md:col-span-2 space-y-4">
-          <div class="bg-zinc-900 p-3">
-            <div class="text-xs text-zinc-400">Текущее</div>
-            <div id="activity-name">—</div>
-            <div class="text-xs">Осталось: <span id="activity-left">—</span></div>
-            <div class="bar"><div id="activity-bar" class="bar-inner"></div></div>
+
+    <main class="grid">
+      <section class="left">
+        <div class="card">
+          <div class="label">Текущее</div>
+          <div class="value" id="activity-name">—</div>
+          <div class="small">Осталось: <span id="activity-left">—</span></div>
+          <div class="bar"><div id="activity-bar" class="bar-inner" style="width:0%"></div></div>
+        </div>
+
+        <div class="card quote" style="margin-top:14px">
+          <div class="quoteText">Он умер в боли. Но любовь была до конца.</div>
+        </div>
+
+        <div class="card profile" style="margin-top:14px">
+          <div class="pTitle">Профиль</div>
+          <div class="pName">Дэннис</div>
+          <div class="pQuote">«Я здесь.»</div>
+          <div class="pMeta">
+            <div><b>Хозяйка:</b> Ольга</div>
+            <div><b>Возраст:</b> навсегда 6 лет</div>
           </div>
-          <p class="italic text-zinc-400">Он умер в боли. Но любовь была до конца.</p>
+          <div class="pFoot">Он не стал легче. Он остался.</div>
         </div>
-        <aside>
-          <h2 class="text-sm text-zinc-400">Действия</h2>
-          <div id="actions"></div>
-        </aside>
-      </section>
-      <section>
-        <h2 class="text-sm text-zinc-400">Профиль</h2>
-        <div class="bg-zinc-900 p-4">
-          <h3 class="text-lg font-semibold">Дэннис</h3>
-          <p class="italic text-zinc-400">«Я здесь.»</p>
-          <ul>
-            <li>Хозяйка: Ольга</li>
-            <li>Возраст: навсегда 6 лет</li>
-          </ul>
+
+        <div class="card" style="margin-top:14px">
+          <div class="pTitle">Лог</div>
+          <div id="log" class="log"></div>
         </div>
       </section>
-      <section>
-        <h2 class="text-sm text-zinc-400">Лог</h2>
-        <div id="log" class="bg-zinc-900 p-3 h-56 overflow-auto"></div>
-      </section>
+
+      <aside class="right">
+        <div class="card">
+          <div class="pTitle">Действия</div>
+          <div id="actions" class="actions"></div>
+        </div>
+      </aside>
     </main>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
