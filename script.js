@@ -1,71 +1,69 @@
+// --- Background: dark soil texture (draw once) ---
+const bg = document.getElementById('bgCanvas');
+const bctx = bg.getContext('2d', { alpha: false });
 
-// --- Canvas clouds background (макет 3) ---
-const c = document.getElementById('cloudCanvas');
-const ctx = c.getContext('2d');
-const DPR = Math.min(window.devicePixelRatio || 1, 1.25);
-let RUN_BG = true;
+const DPR = 1; // фикс: быстро и без ретины
 
-function resize(){
-  c.width = Math.floor(window.innerWidth * DPR);
-  c.height = Math.floor(window.innerHeight * DPR);
+function r01(){ return Math.random(); }
+
+function resizeBG(){
+  bg.width  = Math.floor(window.innerWidth * DPR);
+  bg.height = Math.floor(window.innerHeight * DPR);
+  drawSoil();
 }
-window.addEventListener('resize', resize);
-document.addEventListener('visibilitychange', () => { RUN_BG = !document.hidden; });
-resize();
+window.addEventListener('resize', resizeBG);
 
-let t = 0;
-const blobs = Array.from({length: 140}, () => ({
-  x: Math.random()*1.2 - 0.1,
-  y: Math.random()*0.9,
-  r: 0.08 + Math.random()*0.22,
-  a: 0.02 + Math.random()*0.05,
-  s: 0.002 + Math.random()*0.006
-}));
+function drawSoil(){
+  const w = bg.width, h = bg.height;
 
-let lastDraw = 0;
-function draw(ts){
-  if (!RUN_BG) { requestAnimationFrame(draw); return; }
-  if (ts && ts - lastDraw < 33) { requestAnimationFrame(draw); return; }
-  lastDraw = ts || lastDraw;
-  t += 0.0025;
-  const w = c.width, h = c.height;
+  // base gradient (almost black-brown)
+  const g = bctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0, '#070604');
+  g.addColorStop(0.55,'#040302');
+  g.addColorStop(1, '#000000');
+  bctx.fillStyle = g;
+  bctx.fillRect(0,0,w,h);
 
-  // sky gradient
-  const g = ctx.createLinearGradient(0,0,0,h);
-  g.addColorStop(0,'#0a0a16');
-  g.addColorStop(0.55,'#04040b');
-  g.addColorStop(1,'#000000');
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,w,h);
+  // noise layer (cheap)
+  const img = bctx.getImageData(0,0,w,h);
+  const data = img.data;
 
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  ctx.filter = `blur(${18*DPR}px)`;
+  // parameters tuned for "soil"
+  for (let i=0; i<data.length; i+=4){
+    // grain
+    const n = (Math.random()*2 - 1);
+    // subtle brown variation
+    const base = 10 + Math.random()*18;
+    let r = base + n*10;
+    let gg = base*0.85 + n*9;
+    let bb = base*0.65 + n*8;
 
-  for (const b of blobs){
-    const x = ((b.x + (t*b.s)) % 1.3) * w;
-    const y = b.y * h;
-    const r = b.r * Math.max(w,h);
-    const gg = ctx.createRadialGradient(x,y,0,x,y,r);
-    gg.addColorStop(0, `rgba(210,210,245,${b.a})`);
-    gg.addColorStop(1, `rgba(210,210,245,0)`);
-    ctx.fillStyle = gg;
-    ctx.beginPath();
-    ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.fill();
+    // random darker clumps
+    if (Math.random() < 0.012){
+      r *= 0.35; gg *= 0.35; bb *= 0.35;
+    }
+    // occasional lighter specks
+    if (Math.random() < 0.008){
+      r += 18; gg += 14; bb += 10;
+    }
+
+    data[i]   = Math.max(0, Math.min(255, r));
+    data[i+1] = Math.max(0, Math.min(255, gg));
+    data[i+2] = Math.max(0, Math.min(255, bb));
+    data[i+3] = 255;
   }
-  ctx.restore();
+  bctx.putImageData(img,0,0);
 
-  // subtle vignette
-  const vg = ctx.createRadialGradient(w*0.5,h*0.15,0,w*0.5,h*0.35,Math.max(w,h)*0.75);
-  vg.addColorStop(0,'rgba(255,255,255,0.06)');
-  vg.addColorStop(1,'rgba(0,0,0,0.35)');
-  ctx.fillStyle = vg;
-  ctx.fillRect(0,0,w,h);
-
-  requestAnimationFrame(draw);
+  // soft vignette
+  const vg = bctx.createRadialGradient(w*0.5,h*0.35,0,w*0.5,h*0.5,Math.max(w,h)*0.75);
+  vg.addColorStop(0,'rgba(255,255,255,0.03)');
+  vg.addColorStop(1,'rgba(0,0,0,0.62)');
+  bctx.fillStyle = vg;
+  bctx.fillRect(0,0,w,h);
 }
-requestAnimationFrame(draw);
+
+resizeBG();
+
 
 // --- UI logic ---
 const actionsEl = document.getElementById("actions");
