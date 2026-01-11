@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --text:#f1f1f8;
@@ -56,7 +57,7 @@ body::before{
 .card{
   background:linear-gradient(180deg,var(--panel),var(--panel2));
   border:1px solid var(--border);
-  border-radius:16px;
+  border-radius: 30px 30px 18px 18px;
   box-shadow:0 18px 55px var(--shadow);
   backdrop-filter:blur(10px);
   padding:12px 14px;
@@ -68,14 +69,14 @@ body::before{
 .barInner{height:100%; width:0%; background:linear-gradient(90deg, rgba(230,230,255,.22), rgba(150,150,210,.62))}
 .quoteText{color:rgba(240,240,252,.90); font-style:italic}
 .pTitle{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px}
-.profileGrid{display:grid; grid-template-columns:1fr 220px; gap:12px; align-items:center}
-.pName{font-size:16px; font-weight:900}
+.profileGrid{display:grid; grid-template-columns:1fr 220px; gap:12px; align-items:flex-start}
+.pName{font-family:"Cormorant Garamond","IBM Plex Serif",serif; font-size:22px; font-weight:700; margin:0; padding:0; letter-spacing:.02em; color:rgba(245,245,255,.96); text-shadow: 0 0 18px rgba(255,255,255,.14), 0 2px 18px rgba(0,0,0,.65)}
 .pQuote{margin-top:3px; color:rgba(230,230,246,.85); font-style:italic}
 .pMeta{margin-top:8px; display:grid; gap:5px; color:rgba(235,235,250,.84); font-size:13px}
 .pFoot{margin-top:8px; color:rgba(215,215,235,.75); font-size:13px}
 .dennisImg{width:100%; max-width:220px; height:auto; display:block; filter:drop-shadow(0 16px 34px rgba(0,0,0,.70))}
-.voice{flex:1; min-height:0; border-color:rgba(200,200,255,.18); box-shadow:0 18px 65px rgba(0,0,0,.72), 0 0 34px var(--glow)}
-.log{height:100%; min-height:0; overflow:auto; padding:8px 10px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.10);
+.voice{overflow:hidden; flex:1; min-height:0; border-color:rgba(200,200,255,.18); box-shadow:0 18px 65px rgba(0,0,0,.72), 0 0 34px var(--glow)}
+.log{width:100%; height:100%; min-height:0; overflow:auto; padding:8px 10px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.10);
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; line-height:1.4}
 .whisper{color:rgba(205,205,230,.72); font-style:italic}
 .actionsCard{flex:1; min-height:0; display:flex; flex-direction:column}
@@ -102,6 +103,8 @@ button:active{transform:translateY(0) scale(.99)}
   .voice{min-height:240px}
   .profileGrid{grid-template-columns:1fr}
 }
+
+.profile .profileGrid > div:first-child{padding-top:0;}
 </style>
 </head>
 <body>
