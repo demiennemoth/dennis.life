@@ -68,10 +68,10 @@ const activityLeftEl = document.getElementById("activity-left");
 const activityBarEl = document.getElementById("activity-bar");
 
 const ACTIONS = [
-  { name: "Поесть", dur: 6.0, lines: ["Не получается.", "Больно.", "Теперь можно."] },
   { name: "Лечь на колени", dur: 10.0, lines: ["Ты тёплая.", "Можно полежать?", "Оля, я здесь."] },
+  { name: "Погладить", dur: 4.0, lines: ["Мне больно, но хорошо.", "Я помню руки.", "Я помню."] },
   { name: "Лечь спать на подушку", dur: 20.0, lines: ["Я здесь.", "Я сторожу сон.", "Мне хорошо."] },
-  { name: "Погладить", dur: 4.0, lines: ["Мне больно, но хорошо.", "Я помню руки.", "Я помню."] }
+  { name: "Поесть", dur: 6.0, lines: ["Не получается.", "Больно.", "Теперь можно."] }
 ];
 
 let current = null;
