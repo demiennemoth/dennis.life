@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Он здесь</title>
+<style>
+:root{
+  --text:#f1f1f8;
+  --muted:rgba(220,220,235,.72);
+  --panel:rgba(0,0,0,.55);
+  --panel2:rgba(0,0,0,.62);
+  --border:rgba(255,255,255,.12);
+  --border2:rgba(255,255,255,.18);
+  --shadow:rgba(0,0,0,.70);
+  --glow:rgba(190,190,255,.10);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  overflow:hidden;
+  background:#000 url("images/soil.png") center/cover no-repeat fixed;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.34);
+  pointer-events:none;
+}
+.app{position:relative; height:100vh; display:flex; flex-direction:column; padding:18px; gap:14px}
+.header{max-width:1180px; width:100%; margin:0 auto}
+.title{font-size:28px; font-weight:900; letter-spacing:.2px; text-shadow:0 2px 18px rgba(0,0,0,.65)}
+.subtitle{margin-top:6px; color:var(--muted); font-size:14px; text-shadow:0 2px 18px rgba(0,0,0,.65)}
+.grid{
+  max-width:1180px; width:100%; margin:0 auto;
+  flex:1; min-height:0;
+  display:grid; grid-template-columns:1.75fr 1fr; gap:14px;
+}
+.col{min-height:0; display:flex; flex-direction:column; gap:12px}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:0 18px 55px var(--shadow);
+  backdrop-filter:blur(10px);
+  padding:12px 14px;
+}
+.label{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.12em}
+.value{font-size:16px; font-weight:900; margin-top:6px}
+.small{color:var(--muted); font-size:12px; margin-top:4px}
+.bar{height:10px; margin-top:10px; border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.35)}
+.barInner{height:100%; width:0%; background:linear-gradient(90deg, rgba(230,230,255,.22), rgba(150,150,210,.62))}
+.quoteText{color:rgba(240,240,252,.90); font-style:italic}
+.pTitle{color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.12em; margin-bottom:8px}
+.profileGrid{display:grid; grid-template-columns:1fr 220px; gap:12px; align-items:center}
+.pName{font-size:16px; font-weight:900}
+.pQuote{margin-top:3px; color:rgba(230,230,246,.85); font-style:italic}
+.pMeta{margin-top:8px; display:grid; gap:5px; color:rgba(235,235,250,.84); font-size:13px}
+.pFoot{margin-top:8px; color:rgba(215,215,235,.75); font-size:13px}
+.dennisImg{width:100%; max-width:220px; height:auto; display:block; filter:drop-shadow(0 16px 34px rgba(0,0,0,.70))}
+.voice{flex:1; min-height:0; border-color:rgba(200,200,255,.18); box-shadow:0 18px 65px rgba(0,0,0,.72), 0 0 34px var(--glow)}
+.log{height:100%; min-height:0; overflow:auto; padding:8px 10px; border-radius:14px; background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.10);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12px; line-height:1.4}
+.whisper{color:rgba(205,205,230,.72); font-style:italic}
+.actionsCard{flex:1; min-height:0; display:flex; flex-direction:column}
+.actions{margin-top:10px; display:flex; flex-direction:column; gap:10px; min-height:0; overflow:auto; padding-right:2px}
+button{
+  width:100%; cursor:pointer; padding:10px 12px; border-radius:16px;
+  border:1px solid var(--border2);
+  background:rgba(20,20,26,.78);
+  color:var(--text); font-size:13px;
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
+}
+button:hover{transform:translateY(-1px); background:rgba(34,34,44,.84); border-color:rgba(255,255,255,.26)}
+button:active{transform:translateY(0) scale(.99)}
+.toast{
+  position:fixed; left:16px; bottom:16px; z-index:10;
+  background:rgba(0,0,0,.72); border:1px solid rgba(255,255,255,.12);
+  border-radius:14px; padding:10px 12px; color:rgba(240,240,252,.92);
+  max-width: 560px; display:none;
+}
+@media (max-width:900px){
+  body{overflow:auto}
+  .app{height:auto}
+  .grid{grid-template-columns:1fr}
+  .voice{min-height:240px}
+  .profileGrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<main class="app">
+  <header class="header">
+    <div class="title">Он здесь</div>
+    <div class="subtitle">Дэннис</div>
+  </header>
+
+  <section class="grid">
+    <div class="col left">
+      <div class="card current">
+        <div class="label">Текущее</div>
+        <div class="value" id="activityName">—</div>
+        <div class="small">Осталось: <span id="activityLeft">—</span></div>
+        <div class="bar"><div id="activityBar" class="barInner"></div></div>
+      </div>
+
+      <div class="card quote">
+        <div class="quoteText">Он умер в боли. Но любовь была до конца.</div>
+      </div>
+
+      <div class="card profile">
+        <div class="pTitle">Профиль</div>
+        <div class="profileGrid">
+          <div>
+            <div class="pName">Дэннис</div>
+            <div class="pQuote">«Я здесь.»</div>
+            <div class="pMeta">
+              <div><b>Хозяйка:</b> Ольга</div>
+              <div><b>Возраст:</b> навсегда 6 лет</div>
+            </div>
+            <div class="pFoot">Он не стал легче. Он остался.</div>
+          </div>
+          <div>
+            <img class="dennisImg" src="images/dennis_angel.png" alt="Дэннис — ангел-кот">
+          </div>
+        </div>
+      </div>
+
+      <div class="card voice">
+        <div class="pTitle">Голос Дэнниса</div>
+        <div id="log" class="log"></div>
+      </div>
+    </div>
+
+    <div class="col right">
+      <div class="card actionsCard">
+        <div class="pTitle">Действия</div>
+        <div id="actions" class="actions"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const actionsEl = document.getElementById("actions");
+const logEl = document.getElementById("log");
+const activityNameEl = document.getElementById("activityName");
+const activityLeftEl = document.getElementById("activityLeft");
+const activityBarEl = document.getElementById("activityBar");
+const toast = document.getElementById("toast");
+
+function showToast(t){
+  toast.textContent = t;
+  toast.style.display = "block";
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>toast.style.display="none", 5500);
+}
+
+function logLine(t, cls=""){
+  const d = document.createElement("div");
+  if (cls) d.className = cls;
+  d.textContent = t;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function fmt(ms){
+  const s = Math.max(0, Math.round(ms/1000));
+  const mm = String(Math.floor(s/60)).padStart(2,"0");
+  const ss = String(s%60).padStart(2,"0");
+  return `${mm}:${ss}`;
+}
+
+const ACTIONS = [
+  { name:"Лечь на колени", dur: 10_000, lines:["Ты тёплая.","Можно полежать?","Оля, я здесь."] },
+  { name:"Погладить", dur: 4_000, lines:["Мне хорошо.","Я помню.","Я люблю тебя, Оля."] },
+  { name:"Лечь спать на подушку", dur: 20_000, lines:["Я здесь.","Мне хорошо.","Я сторожу сон."] },
+  { name:"Поесть", dur: 6_000, lines:["Больно.","Не получается.","Теперь можно."] },
+];
+
+let current = null;
+let last = performance.now();
+
+function startAction(a){
+  if (current){ logLine("Сначала закончи текущее.", "whisper"); return; }
+  current = { ...a, left: a.dur, total: a.dur };
+  activityNameEl.textContent = a.name;
+  activityLeftEl.textContent = fmt(current.left);
+  activityBarEl.style.width = "0%";
+  logLine("Начал(а): " + a.name + " (≈ " + fmt(current.left) + ").", "whisper");
+}
+
+function tick(now){
+  const dt = now - last; last = now;
+  if (current){
+    current.left -= dt;
+    activityLeftEl.textContent = fmt(current.left);
+    const pct = (1 - (current.left/current.total))*100;
+    activityBarEl.style.width = Math.min(100, Math.max(0,pct)) + "%";
+    if (current.left <= 0){
+      const line = current.lines[Math.floor(Math.random()*current.lines.length)];
+      logLine(line);
+      logLine("Завершено: " + current.name + ".", "whisper");
+      current = null;
+      activityNameEl.textContent = "—";
+      activityLeftEl.textContent = "—";
+      activityBarEl.style.width = "0%";
+    }
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+ACTIONS.forEach(a=>{
+  const b = document.createElement("button");
+  b.textContent = a.name;
+  b.onclick = ()=>startAction(a);
+  actionsEl.appendChild(b);
+});
+
+// sanity checks (покажет, если картинки не на месте)
+Promise.all([
+  new Promise(res=>{ const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src="images/soil.png"; }),
+  new Promise(res=>{ const i=new Image(); i.onload=()=>res(true); i.onerror=()=>res(false); i.src="images/dennis_angel.png"; }),
+]).then(([soilOk, denOk])=>{
+  if (!soilOk) showToast('Не найден фон: images/soil.png (проверь путь/имя)');
+  if (!denOk) showToast('Не найден Дэннис: images/dennis_angel.png (проверь путь/имя)');
+});
+
+logLine("Он здесь.", "whisper");
+</script>
+</body>
+</html>
