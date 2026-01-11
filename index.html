@@ -44,7 +44,7 @@ body::before{
   pointer-events:none;
   z-index:0;
 }
-.app{position:relative; z-index:1; height:100vh; display:flex; flex-direction:column; padding:18px; gap:14px}
+.app{position:relative; z-index:2; height:100vh; display:flex; flex-direction:column; padding:18px; gap:14px}
 .header{max-width:1180px; width:100%; margin:0 auto}
 .title{font-size:28px; font-weight:900; letter-spacing:.2px; text-shadow:0 2px 18px rgba(0,0,0,.65)}
 .subtitle{margin-top:6px; color:var(--muted); font-size:14px; text-shadow:0 2px 18px rgba(0,0,0,.65)}
@@ -158,10 +158,88 @@ button:active{transform:translateY(0) scale(.99)}
     0 0 0 1px rgba(255,255,255,.06);
   pointer-events:none;
 }
+
+/* ---- dark memory layer (мерцающие слова / вспышки / шёпот) ---- */
+.ghostLayer{
+  position:fixed; inset:0; z-index:1;
+  pointer-events:none;
+  overflow:hidden;
+  filter: blur(.15px);
+}
+.ghostWord{
+  position:absolute;
+  color:rgba(235,235,252,.18);
+  font-family:"Cormorant Garamond","IBM Plex Serif",serif;
+  letter-spacing:.02em;
+  text-shadow:0 0 22px rgba(255,255,255,.10), 0 8px 26px rgba(0,0,0,.55);
+  transform:translate(-50%,-50%);
+  opacity:0;
+  mix-blend-mode:screen;
+  will-change:opacity, transform, filter;
+  animation: ghostFade var(--d,7s) ease-in-out 1;
+}
+.ghostWord.cut{ clip-path: inset(0 var(--cutR,0%) 0 var(--cutL,0%)); }
+@keyframes ghostFade{
+  0%   {opacity:0; filter:blur(.6px); transform:translate(-50%,-50%) translateY(6px) scale(.985);}
+  18%  {opacity:1;}
+  60%  {opacity:.7;}
+  100% {opacity:0; filter:blur(1.0px); transform:translate(-50%,-50%) translateY(-8px) scale(1.02);}
+}
+
+.memoryFlash{
+  position:fixed; inset:0; z-index:15;
+  pointer-events:none;
+  background:rgba(255,255,255,.075);
+  opacity:0;
+  transition:opacity 120ms ease;
+}
+.memoryFlash.on{ opacity:1; transition:opacity 60ms ease; }
+
+.whisperCorner{
+  position:fixed;
+  right:16px; bottom:16px;
+  z-index:6;
+  max-width:min(460px, calc(100vw - 32px));
+  padding:8px 10px;
+  border-radius:14px;
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(220,220,240,.55);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px;
+  line-height:1.35;
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity 600ms ease, transform 600ms ease;
+  pointer-events:none;
+}
+.whisperCorner.on{ opacity:1; transform:translateY(0); }
+
+.overlayInner.glitch{
+  text-shadow:
+    0 2px 30px rgba(0,0,0,.85),
+    2px 0 0 rgba(255,255,255,.12),
+    -2px 0 0 rgba(160,160,220,.18);
+  animation: overlayGlitch 360ms steps(2,end) 1;
+}
+@keyframes overlayGlitch{
+  0%{ transform:translateX(0) skewX(0deg);}
+  20%{ transform:translateX(1px) skewX(-2deg);}
+  40%{ transform:translateX(-2px) skewX(2deg);}
+  60%{ transform:translateX(2px) skewX(-1deg);}
+  80%{ transform:translateX(-1px) skewX(1deg);}
+  100%{ transform:translateX(0) skewX(0deg);}
+}
+/* -------------------------------------------------------------- */
+
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
+
+<div class="memoryFlash" id="memoryFlash" aria-hidden="true"></div>
+<div class="ghostLayer" id="ghostLayer" aria-hidden="true"></div>
+<div class="whisperCorner" id="whisperCorner" aria-hidden="true"></div>
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" tabindex="-1"><div class="overlayInner" id="overlayInner"></div><div class="overlayHint">нажми, чтобы закрыть</div></div>
 <main class="app">
   <header class="header">
@@ -224,6 +302,116 @@ const activityLeftEl = document.getElementById("activityLeft");
 const activityBarEl = document.getElementById("activityBar");
 const toast = document.getElementById("toast");
 
+
+const ghostLayer = document.getElementById("ghostLayer");
+const memoryFlash = document.getElementById("memoryFlash");
+const whisperCorner = document.getElementById("whisperCorner");
+
+let lastUserTouch = performance.now();
+["click","keydown","mousemove","touchstart"].forEach(ev=>{
+  document.addEventListener(ev, ()=>{ lastUserTouch = performance.now(); }, {passive:true});
+});
+
+const BACKGROUND_WORDS = [
+  "Оля", "Оля, ты здесь?", "не уходи", "я здесь", "я остался", "я твой",
+  "больно", "не могу", "голод", "рот", "пусто", "страшно", "я стараюсь",
+  "миска", "руки", "подушка", "колени", "тепло", "носом", "рядом",
+  "не выходит", "не отпускай", "я помню"
+];
+
+const WHISPERS = [
+  "Оля рядом.",
+  "Не трогай. Дай тишину.",
+  "Я слышу дыхание.",
+  "Рот болит.",
+  "Я опять не смог.",
+  "Руки помнят.",
+  "Подушка — безопасно.",
+  "Я здесь.",
+  "Оля.",
+  "Не уходи."
+];
+
+function flashMemory(){
+  memoryFlash.classList.add("on");
+  setTimeout(()=>memoryFlash.classList.remove("on"), 120);
+}
+
+function spawnGhostWord(word, opts={}){
+  if (!ghostLayer) return;
+  const s = document.createElement("span");
+  s.className = "ghostWord" + (opts.cut ? " cut" : "");
+  s.textContent = word;
+
+  const x = (opts.x ?? (Math.random()*100));
+  const y = (opts.y ?? (Math.random()*100));
+  const size = opts.size ?? (18 + Math.random()*54);
+  const rot = opts.rot ?? ((Math.random()*10)-5);
+  const d = opts.dur ?? (5.5 + Math.random()*7.5);
+
+  s.style.left = x + "vw";
+  s.style.top = y + "vh";
+  s.style.fontSize = size + "px";
+  s.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`;
+  s.style.setProperty("--d", d + "s");
+
+  if (opts.cut){
+    s.style.setProperty("--cutL", (Math.random()*22).toFixed(0) + "%");
+    s.style.setProperty("--cutR", (Math.random()*35).toFixed(0) + "%");
+  }
+
+  ghostLayer.appendChild(s);
+  s.addEventListener("animationend", ()=>s.remove());
+}
+
+function burstWords(words){
+  const baseX = 50 + (Math.random()*10-5);
+  const baseY = 58 + (Math.random()*10-5);
+  words.forEach((w,i)=>{
+    spawnGhostWord(w,{
+      x: baseX + (Math.random()*14-7),
+      y: baseY + (Math.random()*12-6),
+      size: 22 + Math.random()*34,
+      rot: (Math.random()*12-6),
+      dur: 4.2 + Math.random()*3.2,
+      cut: Math.random() < 0.65
+    });
+    // микро-вспышка на одном из слов
+    if (i === 1 && Math.random() < 0.65) flashMemory();
+  });
+}
+
+function maybeWhisper(){
+  if (!whisperCorner) return;
+  if (Math.random() < 0.18){
+    whisperCorner.textContent = randomLine(WHISPERS);
+    whisperCorner.classList.add("on");
+    clearTimeout(maybeWhisper._t);
+    maybeWhisper._t = setTimeout(()=>whisperCorner.classList.remove("on"), 3500 + Math.random()*2500);
+  }
+}
+
+// базовое мерцание
+function scheduleGhost(){
+  const idle = performance.now() - lastUserTouch;
+  const idleBoost = idle > 18_000 ? 0.55 : (idle > 10_000 ? 0.25 : 0);
+  const base = 4200 + Math.random()*5200;
+  const next = Math.max(1800, base * (1 - idleBoost));
+  setTimeout(()=>{
+    const w = randomLine(BACKGROUND_WORDS);
+    spawnGhostWord(w, {
+      size: 18 + Math.random()*58,
+      dur: 5.5 + Math.random()*8,
+      cut: Math.random() < 0.5
+    });
+    if (Math.random() < 0.08) flashMemory(); // редкая вспышка памяти
+    maybeWhisper();
+    scheduleGhost();
+  }, next);
+}
+scheduleGhost();
+
+
 function showToast(t){
   toast.textContent = t;
   toast.style.display = "block";
@@ -233,6 +421,8 @@ function showToast(t){
 
 function showOverlay(t){
   overlayInner.textContent = t;
+  overlayInner.classList.remove("glitch");
+  if (Math.random() < 0.08) overlayInner.classList.add("glitch");
   overlay.style.display = "flex";
   overlay.focus?.();
 }
@@ -298,8 +488,16 @@ function startAction(a){
   activityNameEl.textContent = a.name;
   activityLeftEl.textContent = fmt(current.left);
   activityBarEl.style.width = "0%";
-  if (a.name === "Поесть"){ showOverlay(randomLine(a.lines)); }
-  else { showToast("Начал(а): " + a.name + " (≈ " + fmt(current.left) + ")."); }
+  if (a.name === "Поесть"){ 
+    showOverlay(randomLine(a.lines));
+    burstWords(["голод","больно","не выходит"]);
+  }
+  else { 
+    showToast("Начал(а): " + a.name + " (≈ " + fmt(current.left) + ").");
+    if (a.name === "Погладить") burstWords(["руки","тепло","рядом"]);
+    if (a.name === "Лечь на колени") burstWords(["колени","Оля","дом"]);
+    if (a.name === "Лечь спать на подушку") burstWords(["подушка","тишина","сторожу"]);
+  }
 }
 
 function tick(now){
@@ -310,6 +508,7 @@ function tick(now){
     const pct = (1 - (current.left/current.total))*100;
     activityBarEl.style.width = Math.min(100, Math.max(0,pct)) + "%";
     if (current.left <= 0){
+      spawnGhostWord(randomLine(BACKGROUND_WORDS), {size: 22 + Math.random()*44, dur: 6 + Math.random()*6, cut: Math.random()<0.6});
       if (!maybeShowOlyaLine()) {
         const line = randomLine(current.lines);
         showOverlay(line);
