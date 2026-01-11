@@ -3,9 +3,7 @@
   --t:#f1f1f8;
   --m:rgba(210,210,230,.72);
   --panel: rgba(10,10,14,.46);
-  --panel2: rgba(6,6,10,.52);
   --bd: rgba(255,255,255,.12);
-  --bd2: rgba(255,255,255,.18);
   --sh: rgba(0,0,0,.78);
   --glow: rgba(200,200,255,.10);
 }
@@ -18,7 +16,7 @@ body{
   color:var(--t);
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   background:#000;
-  overflow-x:hidden;
+  overflow:hidden; /* убираем лишний скролл страницы */
   text-shadow: 0 1px 10px rgba(0,0,0,.55);
 }
 
@@ -30,83 +28,123 @@ body{
 }
 
 .wrap{
-  max-width: 1440px;
-  margin: 18px auto;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   padding: 10px 12px;
 }
 
-/* === Главное облако-окно ===
-   Важно: НЕ тянем картинку в 100%/100% (это мылит),
-   используем cover, а контейнер делаем шире. */
+/* === Главное облако-окно (компактно, без “мыла”) ===
+   НЕ растягиваем в 100%/100%: используем contain и ограничиваем высоту */
 .cloud-window{
   position: relative;
-  width: min(1440px, 96vw);
-  margin: 0 auto;
-  padding: 110px 140px 120px;
+  width: min(1280px, 96vw);
+  height: min(760px, calc(100vh - 20px));
+  padding: clamp(52px, 6vh, 78px) clamp(26px, 5vw, 72px);
   background-image: url("images/cloud_window.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
-  filter: drop-shadow(0 34px 80px var(--sh));
+  background-size: contain; /* держим качество, не мылится */
+  filter: drop-shadow(0 28px 70px var(--sh));
+  display:flex;
+  flex-direction:column;
+  overflow:hidden; /* ничего не вылезает за облако */
 }
 
-/* под маленькие экраны — уменьшаем только внутренние отступы,
-   сам фон остаётся cover и не “сжимает” детализацию */
-@media (max-width: 1100px){
-  .cloud-window{ padding: 90px 92px 105px; }
+/* header */
+.top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:10px;
 }
-@media (max-width: 760px){
-  .cloud-window{ padding: 78px 48px 88px; }
+.h1{font-size:26px;font-weight:900;letter-spacing:.25px;line-height:1}
+.sub{color:var(--m);font-size:13px;margin-top:6px}
+
+/* grid */
+.grid{
+  display:grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 14px;
+  align-items:start;
+  flex:1;
+  overflow:hidden;
 }
-@media (max-width: 520px){
-  .cloud-window{ padding: 60px 22px 70px; }
+@media (max-width: 900px){
+  body{ overflow:auto; } /* на телефоне лучше позволить скролл */
+  .cloud-window{ height:auto; min-height: 640px; overflow:visible; background-size: cover; }
+  .grid{ grid-template-columns: 1fr; overflow:visible; }
 }
 
-.top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
-.h1{font-size:30px;font-weight:900;letter-spacing:.3px}
-.sub{color:var(--m);font-size:14px;margin-top:4px}
-
-/* === Сетка как было: левый столбец / правый столбец === */
-.grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
-
-/* === Карточки (блоки) === */
+/* cards */
 .card{
   background: var(--panel);
   border: 1px solid var(--bd);
-  border-radius: 18px;
-  box-shadow: 0 18px 45px rgba(0,0,0,.45);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgba(0,0,0,.45);
   backdrop-filter: blur(10px);
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
+.card + .card{ margin-top: 10px; }
 
-.card + .card{ margin-top: 14px; }
-
-/* Quote */
+.label{color:var(--m);font-size:11px;text-transform:uppercase;letter-spacing:.12em}
+.value{font-size:17px;font-weight:800;margin-top:6px}
+.small{color:var(--m);font-size:12px;margin-top:4px}
 .quoteText{color:rgba(235,235,250,.90);font-style:italic}
 
-/* labels */
-.label{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em}
-.value{font-size:18px;font-weight:800;margin-top:6px}
-.small{color:var(--m);font-size:12px;margin-top:4px}
-
-/* progress */
 .bar{
   height:10px;
   background:rgba(0,0,0,.35);
   border:1px solid rgba(255,255,255,.12);
   border-radius:999px;
   margin-top:10px;
-  overflow:hidden
+  overflow:hidden;
 }
 .bar-inner{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,rgba(210,210,255,.22),rgba(140,140,190,.60))
+  background:linear-gradient(90deg,rgba(210,210,255,.22),rgba(140,140,190,.60));
+}
+
+/* left/right columns */
+.left,.right{ overflow:hidden; }
+
+/* profile */
+.pTitle{color:var(--m);font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.pName{font-size:17px;font-weight:900}
+.pQuote{color:rgba(225,225,245,.85);font-style:italic;margin-top:3px}
+.pMeta{margin-top:8px;color:rgba(230,230,250,.84);display:grid;gap:5px;font-size:13px}
+.pFoot{margin-top:8px;color:rgba(210,210,230,.76);font-size:13px}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns: 1fr 220px;
+  gap: 12px;
+  align-items:center;
+}
+@media (max-width: 720px){
+  .profile-grid{ grid-template-columns: 1fr; }
+  .profile-art{ justify-self:start; }
+}
+.dennis-img{
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display:block;
+  filter: drop-shadow(0 14px 30px rgba(0,0,0,.65));
 }
 
 /* actions */
-.actions{ display:flex; flex-direction:column; gap:10px; margin-top:10px }
+.actions-card{ height:100%; display:flex; flex-direction:column; }
+.actions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+  flex:1;
+  justify-content:flex-start;
+}
 button{
   cursor:pointer;
   width:100%;
@@ -114,53 +152,29 @@ button{
   border:1px solid rgba(255,255,255,.18);
   color:var(--t);
   border-radius:16px;
-  padding:11px 14px;
+  padding:10px 12px;
   transition:transform .12s ease, background .12s ease, border-color .12s ease;
+  font-size:13px;
 }
 button:hover{transform:translateY(-1px);background:rgba(28,28,40,.80);border-color:rgba(255,255,255,.26)}
 button:active{transform:translateY(0) scale(.99)}
 
-/* log (voice) */
+/* voice/log */
+.card.voice{
+  background: linear-gradient(180deg, rgba(10,10,16,.55), rgba(6,6,10,.50));
+  border-color: rgba(200,200,255,.18);
+  box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 35px var(--glow);
+}
+
 .log{
-  height:220px;
+  height: 170px; /* компактнее */
   overflow:auto;
   padding: 8px 10px;
   border-radius: 14px;
-  background: rgba(0,0,0,.26);
+  background: rgba(0,0,0,.24);
   border: 1px solid rgba(255,255,255,.10);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 0 0 6px rgba(200,200,255,.03);
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   font-size:12px;
   line-height:1.4;
 }
-
-/* Slight highlight for voice panel */
-.card.voice{
-  background: linear-gradient(180deg, rgba(10,10,16,.55), rgba(6,6,10,.50));
-  border-color: rgba(200,200,255,.18);
-  box-shadow: 0 18px 55px rgba(0,0,0,.55), 0 0 0 1px rgba(200,200,255,.08), 0 0 40px var(--glow);
-}
-
 .whisper{color:rgba(200,200,230,.72);font-style:italic}
-
-.pTitle{color:var(--m);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px}
-.pName{font-size:18px;font-weight:900}
-.pQuote{color:rgba(225,225,245,.85);font-style:italic;margin-top:4px}
-
-/* profile layout */
-.profile-grid{ display:grid; grid-template-columns: 1fr 260px; gap: 14px; align-items: center; }
-@media (max-width: 720px){
-  .profile-grid{ grid-template-columns: 1fr; }
-  .profile-art{ order: -1; justify-self: start; }
-}
-
-.pMeta{margin-top:10px;color:rgba(230,230,250,.84);display:grid;gap:6px}
-.pFoot{margin-top:10px;color:rgba(210,210,230,.76)}
-
-.dennis-img{
-  width: 100%;
-  max-width: 260px;
-  height: auto;
-  display:block;
-  filter: drop-shadow(0 18px 35px rgba(0,0,0,.65));
-}
