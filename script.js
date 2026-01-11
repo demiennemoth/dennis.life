@@ -587,37 +587,56 @@ window.tick = tick;
 window.S = S;
 
 
-// ---------- Психологические триггеры ----------
+// ---------- ДОБАВЛЕНО: шёпоты / вторжения / последствия ----------
+
+// отдельный "шёпот" в лог (не ломает твою d())
+function w(text) {
+  const p = document.createElement("div");
+  p.className = "whisper";
+  const ts = `[Д${S.day} ${fmtTime(S.hour)}]`;
+  p.textContent = ts + " " + text;
+  logEl.appendChild(p);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// события — появляются, когда система считает нужным
 const EVENTS = [
-  { cond: s => s.stats.social < 20, text: "Ты слишком долго был один." },
-  { cond: s => s.stats.energy < 20, text: "Свет греет, но больше не лечит." },
-  { cond: s => s.stats.mood < 25, text: "Крылья помнят то, чего не было." },
+  { cond: () => S.stats.social <= 20, text: "Ты слишком долго был один." },
+  { cond: () => S.stats.energy <= 20, text: "Свет греет, но больше не лечит." },
+  { cond: () => S.stats.mood <= 25, text: "Крылья помнят то, чего не было." },
+  { cond: () => S.stats.hunger >= 85, text: "Голод делает мысли острыми." },
+  { cond: () => S.stats.hygiene <= 20, text: "Пыль не грязь. Пыль — память." },
 ];
 
 function checkEvents() {
-  EVENTS.forEach(e => {
-    if (e.cond(S) && Math.random() < 0.1) {
-      log(e.text, "whisper");
-    }
-  });
+  // мягкая частота, чтобы не спамило
+  if (Math.random() > 0.12) return;
+  const pool = EVENTS.filter(e => e.cond());
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  w(pick.text);
 }
 
-// ---------- Выбор без правильного ответа ----------
+// последствия — "нет правильного выбора"
 function applyConsequences() {
-  if (S.stats.energy < 30 && Math.random() < 0.2) {
-    S.stats.health -= 1;
-    log("Тело платит за выживание.", "whisper");
+  // мало энергии -> иногда здоровье платит
+  if (S.stats.energy < 30 && Math.random() < 0.20) {
+    mod({ health: -1 });
+    w("Тело платит за выживание.");
   }
+
+  // слишком высокая социализация -> иногда настроение режется (ощущение стирания)
   if (S.stats.social > 70 && Math.random() < 0.15) {
-    S.stats.mood -= 1;
-    log("Слишком много света. Он стирает.", "whisper");
+    mod({ mood: -1 });
+    w("Слишком много света. Он стирает.");
   }
 }
 
-// ---------- Переопределение тика ----------
-const _tick = tick;
-tick = function() {
-  _tick();
+// ВАЖНО: tick() у тебя принимает dt — поэтому мы ОБЯЗАНЫ его прокинуть.
+const __tick = tick;
+tick = function (dt) {
+  __tick(dt);
+  // вторжения и последствия идут после базового тика
   checkEvents();
   applyConsequences();
 };
