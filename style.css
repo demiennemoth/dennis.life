@@ -35,7 +35,7 @@ body{
   width: min(1100px, 96vw);
   margin: 0 auto;
   padding: 92px 120px 105px;
-  background-image: url("assets/cloud_window.png");
+  background-image: url("images/cloud_window.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
