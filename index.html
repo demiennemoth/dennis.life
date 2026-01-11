@@ -54,7 +54,7 @@ body::before{
   display:grid; grid-template-columns:1.75fr 1fr; gap:14px;
 }
 .col{min-height:0; display:flex; flex-direction:column; gap:12px}
-.col.left{overflow:auto; padding-right:4px}
+.col.left{min-height:0; display:flex; flex-direction:column; gap:12px; overflow:auto; padding-right:4px}
 .card{
   position:relative;
   background:linear-gradient(180deg,var(--panel),var(--panel2));
@@ -237,15 +237,6 @@ button:active{transform:translateY(0) scale(.99)}
   .col.left{overflow:visible; padding-right:0}
 }
 
-
-.factsList{display:grid;gap:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.45;color:rgba(240,240,252,.88)}
-.factRow{display:grid;grid-template-columns:140px 1fr;gap:8px}
-.factKey{color:rgba(220,220,235,.65)}
-.factVal{color:rgba(245,245,255,.95)}
-.helplessText{font-size:14px;line-height:1.55;color:rgba(240,240,252,.92)}
-.helplessText .line{margin:2px 0}
-.forHerLine{font-family:"Cormorant Garamond","IBM Plex Serif",serif;font-size:18px;font-weight:700;letter-spacing:.01em;color:rgba(245,245,255,.92)}
-
 </style>
 </head>
 <body>
@@ -265,8 +256,7 @@ button:active{transform:translateY(0) scale(.99)}
     <div class="col left">
       <div class="card profile">
         <div class="pTitle">Профиль</div>
-
-      <div class="card current">
+<div class="card current">
         <div class="label">Текущее</div>
         <div class="value" id="activityName">—</div>
         <div class="small">Осталось: <span id="activityLeft">—</span></div>
@@ -275,31 +265,7 @@ button:active{transform:translateY(0) scale(.99)}
 
       <div class="card quote">
         <div class="quoteText">Он умер в боли. Но любовь была до конца.</div>
-      
-      <div class="card facts">
-        <div class="pTitle">Факты</div>
-        <div class="factsList">
-          <div class="factRow"><div class="factKey">Диагноз</div><div class="factVal">кальцивирус</div></div>
-          <div class="factRow"><div class="factKey">До операции</div><div class="factVal">не мог есть, был истощён</div></div>
-          <div class="factRow"><div class="factKey">Операция</div><div class="factVal">удалили все зубы</div></div>
-          <div class="factRow"><div class="factKey">После</div><div class="factVal">боль, попытки поесть не получались</div></div>
-          <div class="factRow"><div class="factKey">Смерть</div><div class="factVal">в муках</div></div>
-        </div>
       </div>
-
-      <div class="card helpless">
-        <div class="pTitle">Мы не знали</div>
-        <div class="helplessText">
-          <div class="line">Мы не знали, что делать.</div>
-          <div class="line">Мы пробовали всё, что могли.</div>
-          <div class="line">Это не помогло.</div>
-        </div>
-      </div>
-
-      <div class="card forHer">
-        <div class="forHerLine">Ты была рядом.</div>
-      </div>
-</div>
 
       <div class="profileGrid">
           <div>
