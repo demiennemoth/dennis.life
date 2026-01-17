@@ -268,6 +268,100 @@ button:active{transform:translateY(0) scale(.99)}
 }
 </style>
 
+
+<style>
+/* --- polish pack (вариант 8): micro-interactions --- */
+
+/* smoother overall */
+.card, button, .toast, .overlay, .overlayInner, .log{
+  transition: opacity .22s ease, transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
+}
+
+/* card hover: subtle border glow + lift */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:19px;
+  pointer-events:none;
+  opacity:0;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.08),
+    0 0 28px rgba(180,180,255,.10),
+    0 0 70px rgba(140,140,220,.08);
+  transform:translateY(2px);
+}
+.card:hover{
+  border-color:rgba(255,255,255,.18);
+  box-shadow:0 20px 70px rgba(0,0,0,.76);
+  transform:translateY(-1px);
+}
+.card:hover::after{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* buttons: nicer states */
+button{
+  position:relative;
+  outline:none;
+}
+button:focus-visible{
+  outline:2px solid rgba(190,190,255,.32);
+  outline-offset:2px;
+}
+button[disabled]{
+  cursor:not-allowed;
+  opacity:.55;
+  transform:none !important;
+  background:rgba(14,14,18,.72);
+  border-color:rgba(255,255,255,.10);
+  filter:saturate(.85);
+}
+button[disabled]:hover{
+  background:rgba(14,14,18,.72);
+  border-color:rgba(255,255,255,.10);
+}
+
+/* toast fade */
+.toast{
+  display:block;
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+}
+.toast.on{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* overlay fade (no sudden pop) */
+.overlay{
+  display:flex;
+  opacity:0;
+  pointer-events:none;
+}
+.overlay.on{
+  opacity:1;
+  pointer-events:auto;
+}
+.overlayInner{
+  transform:translateY(6px);
+  opacity:.98;
+}
+.overlay.on .overlayInner{
+  transform:translateY(0);
+}
+
+/* reduce motion support */
+@media (prefers-reduced-motion: reduce){
+  .card, button, .toast, .overlay, .overlayInner, .log, .ghostWord{
+    transition:none !important;
+    animation:none !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -336,6 +430,12 @@ const activityNameEl = document.getElementById("activityName");
 const activityLeftEl = document.getElementById("activityLeft");
 const activityBarEl = document.getElementById("activityBar");
 const toast = document.getElementById("toast");
+
+const actionButtons = [];
+function setButtonsEnabled(enabled){
+  for (const b of actionButtons){ b.disabled = !enabled; }
+}
+
 
 
 const ghostLayer = document.getElementById("ghostLayer");
@@ -455,21 +555,21 @@ scheduleGhost();
 
 function showToast(t){
   toast.textContent = t;
-  toast.style.display = "block";
+  toast.classList.add("on");
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=>toast.style.display="none", 5500);
+  showToast._t = setTimeout(()=>toast.classList.remove("on"), 4200);
 }
 
 function showOverlay(t){
   overlayInner.textContent = t;
   overlayInner.classList.remove("glitch");
   if (Math.random() < 0.10) overlayInner.classList.add("glitch");
-  overlay.style.display = "flex";
+  overlay.classList.add("on");
   overlay.focus?.();
 }
 
-overlay.addEventListener("click", ()=>{ overlay.style.display = "none"; });
-document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") overlay.style.display = "none"; });
+overlay.addEventListener("click", ()=>{ overlay.classList.remove("on"); });
+document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") overlay.classList.remove("on"); });
 
 function fmt(ms){
   const s = Math.max(0, Math.round(ms/1000));
@@ -525,6 +625,7 @@ let last = performance.now();
 
 function startAction(a){
   if (current){ showToast("Сначала закончи текущее."); return; }
+  setButtonsEnabled(false);
   current = { ...a, left: a.dur, total: a.dur };
   activityNameEl.textContent = a.name;
   activityLeftEl.textContent = fmt(current.left);
@@ -551,6 +652,7 @@ function tick(now){
       }
       showToast("Завершено: " + current.name + ".");
       current = null;
+      setButtonsEnabled(true);
       activityNameEl.textContent = "—";
       activityLeftEl.textContent = "—";
       activityBarEl.style.width = "0%";
@@ -564,6 +666,7 @@ ACTIONS.forEach(a=>{
   const b = document.createElement("button");
   b.textContent = a.name;
   b.onclick = ()=>startAction(a);
+  actionButtons.push(b);
   actionsEl.appendChild(b);
 });
 
