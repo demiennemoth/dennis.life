@@ -362,6 +362,71 @@ button[disabled]:hover{
 }
 </style>
 
+
+<style>
+/* --- life album (images/life/001.jpg ... 047.jpg) --- */
+.albumGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
+  margin-top:6px;
+}
+.albumGrid img{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+}
+.albumGrid img:hover{
+  transform:translateY(-1px);
+  border-color:rgba(255,255,255,.22);
+}
+.albumTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.albumTitle{
+  font-family:"Cormorant Garamond","IBM Plex Serif",serif;
+  font-size:24px;
+  font-weight:700;
+  color:rgba(245,245,255,.96);
+}
+.albumNav{
+  display:flex;
+  gap:8px;
+}
+.albumNav button{
+  width:auto;
+  padding:8px 10px;
+  border-radius:12px;
+  font-size:12px;
+}
+.albumView{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+.albumView img{
+  max-width:100%;
+  max-height:78vh;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+}
+.overlayInner.albumMode{
+  max-width:min(1100px, calc(100vw - 48px));
+  width:100%;
+  font-family:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+  font-size:16px;
+  line-height:1.35;
+}
+</style>
+
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -569,6 +634,7 @@ function showOverlay(t){
 }
 
 overlay.addEventListener("click", ()=>{ overlay.classList.remove("on"); });
+overlayInner.addEventListener("click", (e)=>{ e.stopPropagation(); });
 document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") overlay.classList.remove("on"); });
 
 function fmt(ms){
@@ -700,6 +766,137 @@ Promise.all([
   if (!soilOk) showToast('Не найден фон: images/soil.webp или images/soil.png (проверь путь/имя)');
   if (!denOk) showToast('Не найден Дэннис: images/dennis_angel.webp или images/dennis_angel.png (проверь путь/имя)');
 });
+
+
+
+// ----------------- LIFE ALBUM (static files in images/life/) -----------------
+const LIFE_ALBUM = [];
+for (let i=1;i<=47;i++){
+  const n = String(i).padStart(3,"0");
+  LIFE_ALBUM.push(`images/life/${n}.jpg`);
+}
+
+function showOverlayNode(node){
+  overlayInner.classList.add("albumMode");
+  overlayInner.classList.remove("glitch");
+  overlayInner.innerHTML = "";
+  overlayInner.appendChild(node);
+  overlay.classList.add("on");
+  overlay.focus?.();
+}
+
+function openLifeGallery(startIndex=null){
+  // grid view
+  const wrap = document.createElement("div");
+
+  const top = document.createElement("div");
+  top.className = "albumTop";
+
+  const title = document.createElement("div");
+  title.className = "albumTitle";
+  title.textContent = "Фото Дэна при жизни";
+
+  const nav = document.createElement("div");
+  nav.className = "albumNav";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Закрыть";
+  closeBtn.onclick = ()=> overlay.classList.remove("on");
+
+  nav.appendChild(closeBtn);
+  top.appendChild(title);
+  top.appendChild(nav);
+
+  const grid = document.createElement("div");
+  grid.className = "albumGrid";
+
+  LIFE_ALBUM.forEach((src, index)=>{
+    const img = document.createElement("img");
+    img.src = src;
+    img.loading = "lazy";
+    img.alt = `Дэн — ${String(index+1).padStart(3,"0")}`;
+    img.onclick = ()=> openLifeViewer(index);
+    grid.appendChild(img);
+  });
+
+  wrap.appendChild(top);
+  wrap.appendChild(grid);
+  showOverlayNode(wrap);
+
+  // optional: if asked to open directly to a specific photo
+  if (typeof startIndex === "number") openLifeViewer(startIndex);
+}
+
+function openLifeViewer(index){
+  let i = Math.max(0, Math.min(LIFE_ALBUM.length-1, index));
+
+  const wrap = document.createElement("div");
+
+  const top = document.createElement("div");
+  top.className = "albumTop";
+
+  const title = document.createElement("div");
+  title.className = "albumTitle";
+  title.textContent = `Фото ${String(i+1).padStart(3,"0")} / ${String(LIFE_ALBUM.length).padStart(3,"0")}`;
+
+  const nav = document.createElement("div");
+  nav.className = "albumNav";
+
+  const backBtn = document.createElement("button");
+  backBtn.textContent = "К сетке";
+  backBtn.onclick = ()=> openLifeGallery();
+
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "←";
+  prevBtn.onclick = ()=> openLifeViewer(i-1);
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "→";
+  nextBtn.onclick = ()=> openLifeViewer(i+1);
+
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Закрыть";
+  closeBtn.onclick = ()=> overlay.classList.remove("on");
+
+  nav.appendChild(backBtn);
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  nav.appendChild(closeBtn);
+
+  top.appendChild(title);
+  top.appendChild(nav);
+
+  const view = document.createElement("div");
+  view.className = "albumView";
+
+  const img = document.createElement("img");
+  img.src = LIFE_ALBUM[i];
+  img.alt = `Дэн — ${String(i+1).padStart(3,"0")}`;
+  view.appendChild(img);
+
+  wrap.appendChild(top);
+  wrap.appendChild(view);
+
+  showOverlayNode(wrap);
+
+  // keyboard nav while viewer is open
+  const onKey = (e)=>{
+    if (!overlay.classList.contains("on")) return;
+    if (e.key === "ArrowLeft") openLifeViewer(i-1);
+    if (e.key === "ArrowRight") openLifeViewer(i+1);
+  };
+  document.addEventListener("keydown", onKey, { once:true });
+}
+
+// Add button to the right "Действия" list (and respect disable during actions)
+(function addLifeAlbumButton(){
+  const b = document.createElement("button");
+  b.textContent = "Фото Дэна при жизни";
+  b.onclick = ()=> openLifeGallery();
+  actionButtons.push(b);
+  actionsEl.appendChild(b);
+})();
+// ---------------------------------------------------------------------------
 
 showToast("Он здесь.");
 </script>
