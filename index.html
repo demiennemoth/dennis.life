@@ -427,6 +427,89 @@ button[disabled]:hover{
 }
 </style>
 
+
+<!-- THEME: theme-cinematic-funeral -->
+
+<style id="theme-cinematic-funeral">
+
+/* Cinematic Funeral Screen — grain + vignette + subtle flicker */
+:root{
+  --text:#f7f7ff;
+  --muted:rgba(230,230,245,.68);
+  --panel:rgba(0,0,0,.50);
+  --panel2:rgba(0,0,0,.66);
+  --border:rgba(255,255,255,.14);
+  --border2:rgba(255,255,255,.22);
+  --shadow:rgba(0,0,0,.78);
+  --glow:rgba(210,210,255,.16);
+}
+
+body{
+  background-color:#000;
+  filter:saturate(92%) contrast(104%);
+}
+
+body::before{
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(0,0,0,.10) 0%, rgba(0,0,0,.42) 55%, rgba(0,0,0,.70) 100%);
+}
+
+/* top-most film layer (below app, above ghost) */
+body::after{
+  content:"";
+  position:fixed; inset:-15%;
+  pointer-events:none;
+  z-index:2;
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 38%, rgba(0,0,0,.55) 78%, rgba(0,0,0,.90) 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.028), rgba(255,255,255,.028) 1px, rgba(0,0,0,0) 2px, rgba(0,0,0,0) 4px);
+  opacity:.55;
+  mix-blend-mode:multiply;
+  animation:filmDrift 18s ease-in-out infinite, filmFlicker 4.8s steps(2,end) infinite;
+  transform:translate3d(0,0,0);
+}
+
+@keyframes filmDrift{
+  0%{transform:translate3d(-1.2%,.6%,0) scale(1.02)}
+  50%{transform:translate3d(1.0%,-.8%,0) scale(1.02)}
+  100%{transform:translate3d(-1.2%,.6%,0) scale(1.02)}
+}
+@keyframes filmFlicker{
+  0%, 100%{opacity:.52}
+  50%{opacity:.60}
+}
+
+/* cards look more "glass" and expensive */
+.card{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.46), rgba(0,0,0,.72));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 26px 72px rgba(0,0,0,.80);
+  backdrop-filter: blur(14px) saturate(120%);
+}
+.card::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(255,255,255,.08), rgba(255,255,255,0) 55%);
+  opacity:.75;
+}
+/* title treatment */
+.title{
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  font-weight:800;
+}
+.subtitle{opacity:.9}
+/* buttons / actions slightly sharper */
+.actions button, .actions a{
+  border-color:rgba(255,255,255,.20) !important;
+  box-shadow:0 14px 40px rgba(0,0,0,.55);
+}
+
+</style>
+
 </head>
 <body>
 <div class="toast" id="toast"></div>
