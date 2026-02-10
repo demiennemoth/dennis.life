@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Он здесь</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self';">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
+<title>ДЭННИС</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,13 +31,11 @@ body{
   font-family:"IBM Plex Serif", Georgia, "Times New Roman", serif;
   overflow:hidden;
   background:#000;
-  background-image: image-set(
-    url("images/soil.webp") type("image/webp"),
-    url("images/soil.png") type("image/png")
-  );
-  background-position:center;
-  background-size:cover;
-  background-repeat:no-repeat;
+  background:
+    radial-gradient(1200px 800px at 50% 22%, rgba(255,255,255,.08), rgba(0,0,0,0) 58%),
+    radial-gradient(900px 650px at 15% 40%, rgba(190,190,255,.10), rgba(0,0,0,0) 62%),
+    radial-gradient(900px 650px at 85% 45%, rgba(190,190,255,.07), rgba(0,0,0,0) 64%),
+    linear-gradient(180deg, #05050a 0%, #000 55%, #000 100%);
   background-attachment:fixed;
 }
 body::before{
@@ -86,10 +87,14 @@ body::before{
 .actionsCard{flex:1; min-height:0; display:flex; flex-direction:column}
 .actions{margin-top:10px; display:flex; flex-direction:column; gap:10px; min-height:0; overflow:auto; padding-right:2px}
 button{
-  width:100%; cursor:pointer; padding:10px 12px; border-radius:12px; white-space:normal;
+  width:100%; cursor:pointer; padding:12px 14px; border-radius:14px; white-space:normal;
   border:1px solid var(--border2);
   background:rgba(20,20,26,.78);
-  color:var(--text); font-size:13px;
+  color:var(--text);
+  font-family:"Cormorant Garamond","IBM Plex Serif",Georgia,serif;
+  font-size:16px;
+  line-height:1.15;
+  letter-spacing:.04em;
   transition:transform .12s ease, background .12s ease, border-color .12s ease;
 }
 button:hover{transform:translateY(-1px); background:rgba(34,34,44,.84); border-color:rgba(255,255,255,.26)}
@@ -520,8 +525,9 @@ body::after{
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" tabindex="-1"><div class="overlayInner" id="overlayInner"></div><div class="overlayHint">нажми, чтобы закрыть</div></div>
 <main class="app">
   <header class="header">
-    <div class="title">Он здесь</div>
-    <div class="subtitle">Дэннис</div>
+    <div class="title">ДЭННИС</div>
+    <div class="subtitle">Он здесь</div>
+    <div class="subtitle" style="opacity:.55; font-size:12px; letter-spacing:.18em; margin-top:6px;">тихо. рядом. навсегда.</div>
   </header>
 
   <section class="grid">
@@ -819,34 +825,18 @@ ACTIONS.forEach(a=>{
   actionsEl.appendChild(b);
 });
 
-// sanity checks (покажет, если картинки не на месте)
-Promise.all([
-  // soil: webp OR png
-  new Promise(res=>{
-    const i=new Image();
-    i.onload=()=>res(true);
-    i.onerror=()=>{
-      const j=new Image();
-      j.onload=()=>res(true);
-      j.onerror=()=>res(false);
-      j.src="images/soil.png";
-    };
-    i.src="images/soil.webp";
-  }),
-  // dennis: webp OR png
-  new Promise(res=>{
-    const i=new Image();
-    i.onload=()=>res(true);
-    i.onerror=()=>{
-      const j=new Image();
-      j.onload=()=>res(true);
-      j.onerror=()=>res(false);
-      j.src="images/dennis_angel.png";
-    };
-    i.src="images/dennis_angel.webp";
-  }),
-]).then(([soilOk, denOk])=>{
-  if (!soilOk) showToast('Не найден фон: images/soil.webp или images/soil.png (проверь путь/имя)');
+// sanity check (покажет, если картинка Дэнниса не на месте)
+new Promise(res=>{
+  const i=new Image();
+  i.onload=()=>res(true);
+  i.onerror=()=>{
+    const j=new Image();
+    j.onload=()=>res(true);
+    j.onerror=()=>res(false);
+    j.src="images/dennis_angel.png";
+  };
+  i.src="images/dennis_angel.webp";
+}).then((denOk)=>{
   if (!denOk) showToast('Не найден Дэннис: images/dennis_angel.webp или images/dennis_angel.png (проверь путь/имя)');
 });
 
