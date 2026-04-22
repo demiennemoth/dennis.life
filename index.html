@@ -515,6 +515,343 @@ body::after{
 
 </style>
 
+
+<style id="theme-win95-charcoal-override">
+/* === Win95 charcoal override === */
+:root{
+  --95-bg:#000000;
+  --95-face:#c0c0c0;
+  --95-face-dark:#9a9a9a;
+  --95-face-light:#dfdfdf;
+  --95-text:#000000;
+  --95-muted:#3a3a3a;
+  --95-title:#2f2f2f;
+  --95-title-dark:#1e1e1e;
+  --95-white:#ffffff;
+  --95-black:#000000;
+}
+
+html,body{height:100%}
+body{
+  margin:0 !important;
+  overflow:hidden;
+  color:var(--95-text) !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  background:var(--95-bg) !important;
+  filter:none !important;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.06), rgba(0,0,0,0) 30%),
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,0));
+  pointer-events:none;
+  z-index:0;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  opacity:.06;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.35'/></svg>");
+  background-size:140px 140px;
+  mix-blend-mode:screen;
+  animation:none !important;
+  transform:none !important;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:inherit;
+}
+
+.app{
+  position:relative;
+  z-index:3;
+  max-width:1180px;
+  margin:12px auto;
+  height:calc(100vh - 24px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:0 10px 10px;
+}
+
+.header{
+  width:100%;
+  max-width:none;
+  margin:0;
+  text-align:left !important;
+  background:var(--95-face);
+  color:#fff;
+  padding:6px 8px;
+  border-top:2px solid var(--95-face-light);
+  border-left:2px solid var(--95-face-light);
+  border-right:2px solid var(--95-black);
+  border-bottom:2px solid var(--95-black);
+  box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #ffffff;
+}
+
+.title{
+  margin:0 !important;
+  color:#fff !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  font-size:20px !important;
+  font-weight:bold !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  text-shadow:none !important;
+  background:linear-gradient(90deg, var(--95-title), var(--95-title-dark));
+  padding:4px 8px;
+  border:1px solid #1a1a1a;
+}
+
+.subtitle{
+  margin-top:6px !important;
+  color:#111 !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  font-size:12px !important;
+  letter-spacing:0 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+
+.grid{
+  width:100%;
+  max-width:none;
+  margin:0;
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:1.7fr 1fr;
+  gap:10px;
+}
+
+.col{
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.card,
+.voice,
+.actionsCard,
+.toast,
+.overlayInner.albumMode{
+  position:relative;
+  background:var(--95-face) !important;
+  color:var(--95-text) !important;
+  border-radius:0 !important;
+  border-top:2px solid var(--95-face-light) !important;
+  border-left:2px solid var(--95-face-light) !important;
+  border-right:2px solid var(--95-black) !important;
+  border-bottom:2px solid var(--95-black) !important;
+  box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #ffffff !important;
+  backdrop-filter:none !important;
+  filter:none !important;
+}
+
+.card::before,
+.card::after,
+.voice::before,
+.voice::after{
+  display:none !important;
+  content:none !important;
+}
+
+.label,
+.pTitle{
+  display:block;
+  margin:-12px -14px 8px;
+  padding:5px 8px;
+  background:linear-gradient(90deg, var(--95-title), var(--95-title-dark));
+  color:#fff !important;
+  font-size:12px !important;
+  font-weight:bold !important;
+  text-transform:none !important;
+  letter-spacing:0 !important;
+}
+
+.value,
+.pName,
+.albumTitle{
+  color:#000 !important;
+  text-shadow:none !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+}
+
+.value{font-size:18px !important; font-weight:bold !important; margin-top:4px}
+.small,
+.pQuote,
+.pMeta,
+.pFoot,
+.quoteText,
+.whisper,
+.meta{
+  color:#202020 !important;
+  font-style:normal !important;
+  text-shadow:none !important;
+}
+
+.quoteText{
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+}
+
+.profileGrid{
+  grid-template-columns:1fr 200px;
+  gap:12px;
+  align-items:flex-start;
+}
+
+.dennisImg{
+  max-width:180px;
+  filter:drop-shadow(6px 8px 0 rgba(0,0,0,.25));
+}
+
+.bar{
+  height:14px;
+  margin-top:10px;
+  border-radius:0 !important;
+  background:#7a7a7a !important;
+  border-top:2px solid #808080 !important;
+  border-left:2px solid #808080 !important;
+  border-right:2px solid #ffffff !important;
+  border-bottom:2px solid #ffffff !important;
+  overflow:hidden;
+}
+.barInner{
+  background:linear-gradient(90deg, #4a4a4a, #2f2f2f) !important;
+}
+
+.log{
+  background:#ffffff !important;
+  color:#000 !important;
+  border-radius:0 !important;
+  border-top:2px solid #808080 !important;
+  border-left:2px solid #808080 !important;
+  border-right:2px solid #ffffff !important;
+  border-bottom:2px solid #ffffff !important;
+  box-shadow:none !important;
+  font-family:"Courier New", monospace !important;
+}
+
+.actions{
+  gap:8px;
+  padding-right:0;
+}
+
+button{
+  width:100%;
+  cursor:pointer;
+  padding:6px 10px !important;
+  border-radius:0 !important;
+  white-space:normal;
+  color:#000 !important;
+  background:var(--95-face) !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  font-size:13px !important;
+  line-height:1.2;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  border-top:2px solid var(--95-white) !important;
+  border-left:2px solid var(--95-white) !important;
+  border-right:2px solid #808080 !important;
+  border-bottom:2px solid #808080 !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+button:hover{
+  background:#d4d4d4 !important;
+  border-color:unset !important;
+  transform:none !important;
+}
+button:active{
+  border-top:2px solid #808080 !important;
+  border-left:2px solid #808080 !important;
+  border-right:2px solid var(--95-white) !important;
+  border-bottom:2px solid var(--95-white) !important;
+  padding:7px 9px 5px 11px !important;
+  transform:none !important;
+}
+button:focus-visible{
+  outline:1px dotted #000 !important;
+  outline-offset:-4px !important;
+}
+button[disabled]{
+  opacity:.7 !important;
+  filter:none !important;
+}
+
+.toast{
+  left:12px;
+  bottom:12px;
+  max-width:420px;
+  display:block;
+  opacity:0;
+  transform:none !important;
+  padding:10px 12px !important;
+  color:#000 !important;
+  z-index:20;
+}
+.toast.on{opacity:1}
+
+.overlay{
+  background:rgba(0,0,0,.78) !important;
+  backdrop-filter:none !important;
+}
+.overlayInner{
+  max-width:920px;
+  background:var(--95-face);
+  color:#000 !important;
+  border-radius:0 !important;
+  padding:14px 16px !important;
+  border-top:2px solid var(--95-face-light) !important;
+  border-left:2px solid var(--95-face-light) !important;
+  border-right:2px solid var(--95-black) !important;
+  border-bottom:2px solid var(--95-black) !important;
+  box-shadow:inset -1px -1px 0 #808080, inset 1px 1px 0 #ffffff !important;
+  text-shadow:none !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  font-size:24px !important;
+  line-height:1.25 !important;
+  transform:none !important;
+}
+.overlayHint{
+  color:#d0d0d0 !important;
+  text-shadow:none !important;
+  font-family:"MS Sans Serif", Tahoma, Verdana, Arial, sans-serif !important;
+  letter-spacing:.08em;
+}
+
+.albumGrid img,
+.albumView img{
+  border-radius:0 !important;
+  border-top:2px solid #ffffff !important;
+  border-left:2px solid #ffffff !important;
+  border-right:2px solid #808080 !important;
+  border-bottom:2px solid #808080 !important;
+}
+
+.ghostLayer,
+.memoryFlash,
+.whisperCorner{
+  display:none !important;
+}
+
+@media (max-width:900px){
+  body{overflow:auto !important}
+  .app{height:auto; min-height:100vh}
+  .grid{grid-template-columns:1fr}
+  .profileGrid{grid-template-columns:1fr}
+  .overlayInner{font-size:18px !important}
+}
+</style>
+
 </head>
 <body>
 <div class="toast" id="toast"></div>
